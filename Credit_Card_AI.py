@@ -1,24 +1,26 @@
-# Imported Libraries
+# Import necessary libraries
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
 
-# from sklearn.linear_model import LinearRegression, LogisticRegression
+# Load the dataset
+data = pd.read_csv('creditcard.csv')
 
-# Read dataset
-credit_df = pd.read_csv('fraudTest.csv')
+# Split the data into features and target variable
+X = data.drop('Class', axis=1)
+y = data['Class']
 
-# Prepping Dataset
-def prep_data(credit_df: pd.DataFrame) -> (np.ndarray):
-    x = credit_df.iloc[:, 2:30].values
-    y = credit_df.__class__.values
-    return x, y
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
 
-# Plotting Dataset
-def plot_data(x: np.ndarray, y: np.ndarray):
-      plt.scatter(x[y == 0, 0], x[y == 0, 1], label="Exhibit #0", alpha=0.5, linewidth=0.15)
-      plt.scatter(x[y == 1, 0], x[y == 1, 1], label="Exhibit #1", alpha=0.5, linewidth=0.15, c='r')
-      plt.legend()
-      return plt.show()
-x, y = prep_data(credit_df)
-plot_data(x, y)
+# Train the logistic regression model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
